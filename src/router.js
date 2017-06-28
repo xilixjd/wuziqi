@@ -26,7 +26,7 @@ function RouterConfig({ history, app }) {
       name: 'Wuziqi',
       getComponent(nextState, cb) {
         require.ensure([], (require) => {
-          // registerModel(app, require('./models/users'))
+          registerModel(app, require('./models/wuziqi'))
           cb(null, require('./routes/wuziqi/index'))
         })
       },

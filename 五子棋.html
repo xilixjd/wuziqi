@@ -763,7 +763,8 @@ var fiveChess = {
 	computeWeight: function (i, j) {
 		var weight = 14 - (Math.abs(i - 7) + Math.abs(j - 7)), //基于棋盘位置权重
 			pointInfo = {},	//某点下子后连子信息
-			chessColor = this.AIPlayer === "black" ? this.BLACK_CHESS : this.WHITE_CHESS;
+			// chessColor = this.AIPlayer === "black" ? this.BLACK_CHESS : this.WHITE_CHESS;
+			chessColor = 1;
 		//x方向
 		pointInfo = this.putDirectX(i, j, chessColor);
 		weight += this.weightStatus(pointInfo.nums, pointInfo.side1, pointInfo.side2, true);//AI下子权重

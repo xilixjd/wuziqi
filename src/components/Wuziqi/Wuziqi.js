@@ -30,7 +30,6 @@ class Wuziqi extends React.Component {
 		} else if (chess === WHITE_CHESS) {
 			this.addChessToChessboard(i, j, "white")
 		}
-		console.log(this.props.fiveChess)
 	}
 
 	mouseClick = (e) => {
@@ -192,7 +191,7 @@ class Wuziqi extends React.Component {
 	}
 
 	playerWin = () => {
-		this.gameOver()
+		this.gameOver('你赢了')
 		console.log('player win')
 	}
 
@@ -319,7 +318,7 @@ class Wuziqi extends React.Component {
 		this.playChess(maxX, maxY, this.props.fiveChess.AIPlayer, chessArr)
 		if ((maxWeight >= 100000 && maxWeight < 250000) || (maxWeight >= 500000)) {
 			// this.showResult(false);
-			this.gameOver()
+			this.gameOver('电脑赢了')
 			console.log('pc win')
 		}
 		else {
@@ -327,21 +326,34 @@ class Wuziqi extends React.Component {
 		}
 	}
 
-	gameOver = () => {
+	gameOver = (winInfo) => {
 		console.log("gameover")
 		const { dispatch } = this.props
-		let isGameOver = true
 		dispatch({
 			type: 'wuziqi/gameOver',
+			payload: {
+				winInfo
+			}
 		})
 	}
 
 	resetChessBoard = () => {
 		console.log('reset')
 		const { dispatch } = this.props
+		let { chessArr } = this.props.fiveChess
+		for (let i = 0; i < 15; i++) {
+			for (let j = 0; j < 15; j++) {
+				if (chessArr[i][j] !== NO_CHESS) {
+					let chessDom = this.indexToDom(i, j)
+					this.removeClass(chessDom, "black")
+					this.removeClass(chessDom, "white")
+				}
+			}
+		}
 		dispatch({
 			type: 'wuziqi/resetChessBoard',
 		})
+
 	}
 
 	computeWeight = (i, j) => {
@@ -539,6 +551,10 @@ class Wuziqi extends React.Component {
 		return {"nums": nums, "side1": side1, "side2": side2};
 	}
 
+	info = () => {
+		console.log(this.props.fiveChess)
+	}
+
     render () {
         return (
             <div className={styles.wrapper}>
@@ -640,11 +656,11 @@ class Wuziqi extends React.Component {
 					</p>
 					<p>
 						<a id="first_move_btn" className={styles.selected} href="JavaScript:void(0)">先手</a>
-						<a id="second_move_btn" href="JavaScript:void(0)" onClick={this.resetChessBoard}>后手</a>
+						<a id="second_move_btn" href="JavaScript:void(0)">后手</a>
 					</p>
-					<a id="replay_btn" href="JavaScript:void(0)" onClick={this.gameOver}>开始</a>
+					<a id="replay_btn" href="JavaScript:void(0)" onClick={this.resetChessBoard}>开始</a>
 					<p id="result_info">胜率：100%</p>
-					<p id="result_tips"></p>
+					<p id="result_tips">{this.props.fiveChess.winInfo}</p>
 				</div>
 
 				<div style={{display: "none"}}>

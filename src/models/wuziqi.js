@@ -1,4 +1,4 @@
-import { NO_CHESS, BLACK_CHESS, WHITE_CHESS, CHESSARR } from '../constants'
+import { NO_CHESS, BLACK_CHESS, WHITE_CHESS, CHESSARR, initChessArr } from '../constants'
 
 
 export default {
@@ -17,6 +17,7 @@ export default {
         isGameOver: false, //游戏结束
         playerLastChess: [], //玩家最后下子位置
         AILastChess: [], //AI最后下子位置
+        winInfo: '',
     }
   },
 
@@ -30,8 +31,6 @@ export default {
       yield put({ type: 'save' });
     },
     *playChess({ payload: { chessArr, playerLastChess } }, { call, put }) {
-        console.log(chessArr)
-        console.log(playerLastChess)
         yield put({
             type: 'save',
             payload: {
@@ -41,19 +40,22 @@ export default {
         })
     },
     *resetChessBoard({}, {call, put}) {
-        let chessArr = CHESSARR
+        let chessArr = initChessArr()
         yield put({
             type: 'save',
             payload: {
-                chessArr
+                chessArr,
+                isGameOver: false,
+                winInfo: ''
             }
         })
     },
-    *gameOver({}, {call, put}) {
+    *gameOver({ payload: { winInfo } }, {call, put}) {
         yield put({
             type: 'save',
             payload: {
-                isGameOver: true
+                isGameOver: true,
+                winInfo
             }
         })
     }
@@ -61,7 +63,11 @@ export default {
 
   reducers: {
     save(state, action) {
-        return { ...state, ...action.payload };
+        let fiveChess = {
+            ...state.fiveChess,
+            ...action.payload
+        }
+        return { ...state, fiveChess };
     },
 
     // gameOverReducer (state) {

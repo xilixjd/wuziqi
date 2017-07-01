@@ -1,5 +1,5 @@
 import { NO_CHESS, BLACK_CHESS, WHITE_CHESS, CHESSARR, initChessArr } from '../constants'
-
+import { getCurrentUser, userInfo } from '../services/wuziqi'
 
 export default {
 
@@ -18,6 +18,8 @@ export default {
         playerLastChess: [], //玩家最后下子位置
         AILastChess: [], //AI最后下子位置
         winInfo: '',
+        username: '',
+        room: '',
     }
   },
 
@@ -58,7 +60,22 @@ export default {
                 winInfo
             }
         })
-    }
+    },
+    *getCurrentUser({}, { call, put }) {
+        const data = yield call(getCurrentUser, null)
+        console.log(data)
+    },
+    *userInfo ({ payload }, { put, call }) {
+          const data = yield call(userInfo, payload)
+          console.log(data.data)
+          yield put({
+              type: 'save',
+              payload: {
+                  username: data.data.username,
+                  room: data.data.room,
+              }
+          })
+      }
   },
 
   reducers: {
@@ -75,4 +92,4 @@ export default {
     // }
   },
 
-};
+}

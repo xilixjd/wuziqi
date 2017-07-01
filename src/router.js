@@ -31,6 +31,16 @@ function RouterConfig({ history, app }) {
         })
       },
     },
+    {
+      path: '/login',
+      name: 'Login',
+      getComponent(nextState, cb) {
+        require.ensure([], (require) => {
+          registerModel(app, require('./models/login'))
+          cb(null, require('./routes/login/index'))
+        })
+      }
+    }
   ]
   return (
     <Router history={history} routes={routes}/>

@@ -6,6 +6,8 @@ import { NO_CHESS, BLACK_CHESS, WHITE_CHESS } from '../../constants'
 
 import styles from './Wuziqi.less'
 
+import io from 'socket.io-client'
+
 class Wuziqi extends React.Component {
     constructor (props) {
 		super(props)
@@ -650,6 +652,8 @@ class Wuziqi extends React.Component {
 				</div>
 
 				<div className={styles.operating_panel}>
+					<p>用户：{this.props.fiveChess.username}</p>
+					<p className={styles.p_room}>房间号：{this.props.fiveChess.room}</p>
 					<p>
 						<a id="black_btn" className={styles.selected} href="JavaScript:void(0)">黑子</a>
 						<a id="white_btn" href="JavaScript:void(0)">白子</a>
@@ -685,6 +689,10 @@ class Wuziqi extends React.Component {
 
 	componentDidMount () {
 		// console.log(this.props)
+		const { dispatch } = this.props
+		dispatch({
+			type: 'wuziqi/userInfo',
+		})
 	}
 
 	componentWillReceiveProps (nextProps) {
@@ -693,9 +701,11 @@ class Wuziqi extends React.Component {
 }
 
 function mapStateToProps(state) {
-	const { fiveChess } = state.wuziqi
+	const { fiveChess, username, room } = state.wuziqi
 	return {
 		fiveChess,
+		username,
+		room,
 	}
 }
 

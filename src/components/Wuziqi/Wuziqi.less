@@ -1,17 +1,17 @@
 .wrapper {
-	width: 600px;
 	position: relative;
 }
 
 /* 棋盘 */
 div.chessboard {
-	margin: 30px 0 0 50px;
-	width: 542px;
-	background: url(http://sandbox.runjs.cn/uploads/rs/102/r2dy3tyw/chessboard.png) no-repeat 14px 14px rgb(250, 250, 250);
-	overflow: hidden;
+	float: left;
 	box-shadow: 2px 2px 8px #888;
 	-webkit-box-shadow: 2px 2px 8px #888;
 	-moz-box-shadow: 2px 2px 8px #888;
+	margin: 30px 0 30px 30px;
+    width: 543px;
+    background: url(http://sandbox.runjs.cn/uploads/rs/102/r2dy3tyw/chessboard.png) no-repeat 14px 14px #fafafa;
+    overflow: hidden;
 }
 
 div.chessboard div {
@@ -69,11 +69,10 @@ div.chessboard div.black_last {
 /* 右侧 */
 
 div.operating_panel {
-	position: absolute;
-	left: 610px;
-	top: 15px;
-	width: 200px;
-	text-align: center;
+	float: left;
+    width: 170px;
+    margin: 50px 10px;
+    text-align: center;
 }
 
 .operating_panel a {

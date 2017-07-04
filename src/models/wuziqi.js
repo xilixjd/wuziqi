@@ -1,6 +1,7 @@
 import { NO_CHESS, BLACK_CHESS, WHITE_CHESS, CHESSARR, initChessArr } from '../constants'
 import { getCurrentUser, userInfo } from '../services/wuziqi'
 
+
 export default {
 
   namespace: 'wuziqi',
@@ -11,8 +12,6 @@ export default {
         humanPlayer: -1,	//玩家棋子颜色
         AIPlayer: 1,	//AI棋子颜色
         isPlayerTurn: true, //轮到player下棋
-        // totalGames: cookieHandle.getCookie("totalGames") || 0,	//总局数
-        // winGames: cookieHandle.getCookie("winGames") || 0,	//玩家赢局数
         isGameStart: false,	//游戏已经开始
         isGameOver: false, //游戏结束
         playerLastChess: [], //玩家最后下子位置
@@ -20,7 +19,9 @@ export default {
         winInfo: '',
         username: '',
         room: '',
-    }
+    },
+    userList: [],
+    messages: [],
   },
 
   subscriptions: {
@@ -63,19 +64,31 @@ export default {
     },
     *getCurrentUser({}, { call, put }) {
         const data = yield call(getCurrentUser, null)
-        console.log(data)
     },
-    *userInfo ({ payload }, { put, call }) {
+    *userInfo ({ payload }, { call, put }) {
           const data = yield call(userInfo, payload)
-          console.log(data.data)
           yield put({
               type: 'save',
               payload: {
                   username: data.data.username,
                   room: data.data.room,
               }
-          })
-      }
+        })
+    },
+    *getUserList({ payload: { userList } }, { call, put }) {
+        yield put({
+            type: 'saveNormal',
+            payload: {
+                userList,
+            }
+        })
+    },
+    *addMessage({ payload: { message } }, { call, put }) {
+        yield put({
+            type: 'addMessageReducer',
+            payload: message,
+        })
+    }
   },
 
   reducers: {
@@ -84,7 +97,18 @@ export default {
             ...state.fiveChess,
             ...action.payload
         }
-        return { ...state, fiveChess };
+        return { ...state, fiveChess }
+    },
+    saveNormal(state, action) {
+        return { ...state, ...action.payload }
+    },
+    addMessageReducer(state, action) {
+        let { messages } = state
+        messages = [
+            ...messages,
+            action.payload
+        ]
+        return { ...state, messages }
     },
 
     // gameOverReducer (state) {

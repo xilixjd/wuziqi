@@ -3,30 +3,39 @@ import ReactDOM from 'react-dom'
 import { connect } from 'dva'
 
 import { NO_CHESS, BLACK_CHESS, WHITE_CHESS } from '../../constants'
+import { config } from '../../utils'
+
+const { DOMAIN } = config
 
 import styles from './Wuziqi.less'
 
 import io from 'socket.io-client'
 
-class Wuziqi extends React.Component {
+export default class Wuziqi extends React.Component {
     constructor (props) {
 		super(props)
 		this.state = {
-			hoverIndex: null
+			status: '',
+			playWith: 'pc',
+			chess: ''
 		}
     }
 
 	playChess = (i, j, chess, chessArr) => {
+		const socket = io(DOMAIN)
 		const { dispatch } = this.props
 		let playerLastChess = [i, j]
 		chessArr[i][j] = chess
-		dispatch({
-			type: 'wuziqi/playChess',
-			payload: {
-				chessArr,
-				playerLastChess
-			}
-		})
+		// dispatch({
+		// 	type: 'wuziqi/playChess',
+		// 	payload: {
+		// 		chessArr,
+		// 		playerLastChess
+		// 	}
+		// })
+		if (this.state.playWith === 'player') {
+			socket.emit('operate', chessArr)
+		}
 		if (chess === BLACK_CHESS) {
 			this.addChessToChessboard(i, j, "black")
 		} else if (chess === WHITE_CHESS) {
@@ -43,7 +52,11 @@ class Wuziqi extends React.Component {
 			return
 		}
 		if (chessArr[i][j] === NO_CHESS) {
-			this.playChess(i, j, this.props.fiveChess.humanPlayer, chessArr)
+			if (this.state.playWith === 'pc') {
+				this.playChess(i, j, this.props.fiveChess.humanPlayer, chessArr)
+			} else if (this.state.playWith === 'player') {
+				this.playChess(i, j, this.state.chess, chessArr)
+			}
 			if (i === 0 && j === 0) {
 				this.removeClass(e.target, "hover_up_left");
 			}
@@ -72,7 +85,12 @@ class Wuziqi extends React.Component {
 				this.removeClass(e.target, "hover");
 			}
 			// this.AImoveChess()
-			this.playerWinOrNot(i, j)
+			
+			if (this.state.playWith === 'pc') {
+				this.playerWinOrNot(i, j, this.props.fiveChess.humanPlayer)
+			} else if (this.state.playWith === 'player') {
+				this.playerWinOrNot(i, j, this.state.chess)
+			}
 		}
 	}
 
@@ -197,10 +215,9 @@ class Wuziqi extends React.Component {
 		console.log('player win')
 	}
 
-	playerWinOrNot = (i, j) => {
+	playerWinOrNot = (i, j, chessColor) => {
 		let chessArr = this.props.fiveChess.chessArr
 		var nums = 1,	//连续棋子个数
-			chessColor = -1,
 			m, n;
 		//x方向
 		for (m = j - 1; m >= 0; m--) {
@@ -295,7 +312,9 @@ class Wuziqi extends React.Component {
 			this.playerWin();
 			return;
 		}
-		this.AImoveChess();
+		if (this.state.playWith !== 'player') {
+			this.AImoveChess()
+		}
 	}
 
 	AImoveChess = () => {
@@ -356,6 +375,35 @@ class Wuziqi extends React.Component {
 			type: 'wuziqi/resetChessBoard',
 		})
 
+	}
+
+	matchUser =  () => {
+		const { dispatch } = this.props
+		let currentUsername = this.props.fiveChess.username
+		const socket = io(DOMAIN)
+		socket.emit('match', currentUsername)
+		// socket.on('match', (user) => {
+		// 	console.log(user)
+		// 	if (user !== currentUsername) {
+		// 		socket.emit('matchPassword', `Room${user}${currentUsername}`)
+		// 	}
+		// })
+		socket.on('password', (msg) => {
+			console.log(msg)
+			if (this.state.chess) {
+				this.setState({
+					status: msg.status,
+					playWith: 'player',
+				})
+			} else {
+				this.setState({
+					status: msg.status,
+					playWith: 'player',
+					chess: msg.chess
+				})
+			}
+		})
+		
 	}
 
 	computeWeight = (i, j) => {
@@ -558,6 +606,15 @@ class Wuziqi extends React.Component {
 	}
 
     render () {
+		let readyButton
+		if (this.state.status === 'waiting') {
+			readyButton = <a disabled={true} href="JavaScript:void(0)" onClick={this.matchUser}>等待</a>
+		} else if (this.state.status === 'ready') {
+			readyButton = <a disabled={true} href="JavaScript:void(0)" onClick={this.matchUser}>开始</a>
+		} else {
+			readyButton = <a href="JavaScript:void(0)" onClick={this.matchUser}>准备</a>
+		}
+
         return (
             <div className={styles.wrapper}>
 				<div className={styles.chessboard + " bigChessBoard"}>
@@ -662,7 +719,8 @@ class Wuziqi extends React.Component {
 						<a id="first_move_btn" className={styles.selected} href="JavaScript:void(0)">先手</a>
 						<a id="second_move_btn" href="JavaScript:void(0)">后手</a>
 					</p>
-					<a id="replay_btn" href="JavaScript:void(0)" onClick={this.resetChessBoard}>开始</a>
+					<a id="replay_btn" href="JavaScript:void(0)" onClick={this.resetChessBoard}>重置</a>
+					{readyButton}
 					<p id="result_info">胜率：100%</p>
 					<p id="result_tips">{this.props.fiveChess.winInfo}</p>
 				</div>
@@ -688,10 +746,59 @@ class Wuziqi extends React.Component {
     }
 
 	componentDidMount () {
-		// console.log(this.props)
+		const socket = io(DOMAIN)
+		window.addEventListener('beforeunload', (ev) => {
+			ev.preventDefault()
+			socket.emit('leave')
+		})
 		const { dispatch } = this.props
 		dispatch({
 			type: 'wuziqi/userInfo',
+		})
+		socket.on('connect', () => {
+			socket.emit('joined', 'xjd joined')
+			socket.on('users', (userList) => {
+				dispatch({
+					type: 'wuziqi/getUserList',
+					payload: {
+						userList
+					}
+				})
+			})
+			socket.on('messages', (message) => {
+				console.log(message)
+				dispatch({
+					type: 'wuziqi/addMessage',
+					payload: {
+						message
+					}
+				})
+			})
+			socket.on('resetChessBoard', (msg) => {
+				this.resetChessBoard()
+			})
+			socket.on('chessChange', (msg) => {
+				let chessArr = JSON.parse(msg)
+				dispatch({
+					type: 'wuziqi/playChess',
+					payload: {
+						chessArr,
+					}
+				})
+				for (let i = 0; i < 15; i++) {
+					for (let j = 0; j < 15; j++) {
+						let chessDom = this.indexToDom(i, j)
+						if (chessArr[i][j] === BLACK_CHESS) {
+							this.addClass(chessDom, "black")
+						} else if (chessArr[i][j] === WHITE_CHESS) {
+							this.addClass(chessDom, "white")
+						} else {
+							this.removeClass(chessDom, "white")
+							this.removeClass(chessDom, "black")
+						}
+					}
+				}
+			})
 		})
 	}
 
@@ -699,14 +806,3 @@ class Wuziqi extends React.Component {
 		// console.log(nextProps)
 	}
 }
-
-function mapStateToProps(state) {
-	const { fiveChess, username, room } = state.wuziqi
-	return {
-		fiveChess,
-		username,
-		room,
-	}
-}
-
-export default connect(mapStateToProps)(Wuziqi)

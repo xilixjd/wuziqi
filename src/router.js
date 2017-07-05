@@ -17,6 +17,7 @@ function RouterConfig({ history, app }) {
       name: 'IndexPage',
       getComponent(nextState, cb) {
         require.ensure([], (require) => {
+          registerModel(app, require('./models/indexPage'))
           cb(null, require('./routes/IndexPage'))
         })
       },

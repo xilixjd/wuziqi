@@ -88,6 +88,15 @@ export default {
             type: 'addMessageReducer',
             payload: message,
         })
+    },
+    *isPlayerTurn({ payload: { isPlayerTurn } }, { call, put }) {
+        console.log(isPlayerTurn)
+        yield put({
+            type: 'save',
+            payload: {
+                isPlayerTurn
+            }
+        })
     }
   },
 

@@ -10,6 +10,7 @@ const { DOMAIN } = config
 import styles from './Wuziqi.less'
 
 import io from 'socket.io-client'
+const socket = io.connect(DOMAIN)
 
 export default class Wuziqi extends React.Component {
     constructor (props) {
@@ -17,24 +18,27 @@ export default class Wuziqi extends React.Component {
 		this.state = {
 			status: '',
 			playWith: 'pc',
-			chess: ''
+			chess: '',
+			hoverIndex: ''
 		}
     }
 
 	playChess = (i, j, chess, chessArr) => {
-		const socket = io(DOMAIN)
 		const { dispatch } = this.props
 		let playerLastChess = [i, j]
 		chessArr[i][j] = chess
-		// dispatch({
-		// 	type: 'wuziqi/playChess',
-		// 	payload: {
-		// 		chessArr,
-		// 		playerLastChess
-		// 	}
-		// })
+		dispatch({
+			type: 'wuziqi/playChess',
+			payload: {
+				chessArr,
+				playerLastChess
+			}
+		})
 		if (this.state.playWith === 'player') {
-			socket.emit('operate', chessArr)
+			socket.emit('operate', {
+				chessArr,
+				chess: this.state.chess,
+			})
 		}
 		if (chess === BLACK_CHESS) {
 			this.addChessToChessboard(i, j, "black")
@@ -43,12 +47,53 @@ export default class Wuziqi extends React.Component {
 		}
 	}
 
+	playChess1 = (i, j, chess, chessArr) => {
+		const { dispatch } = this.props
+		let playerLastChess = [i, j]
+		chessArr[i][j] = chess
+		dispatch({
+			type: 'wuziqi/playChess',
+			payload: {
+				chessArr,
+				playerLastChess
+			}
+		})
+		if (this.state.playWith === 'player') {
+			socket.emit('operate', {
+				chessArr,
+				chess: this.state.chess,
+			})
+			dispatch({
+				type: 'wuziqi/isPlayerTurn',
+				payload: {
+					isPlayerTurn: false
+				}
+			})
+		}
+	}
+
+	mouseClick1 = (i, j, chess, chessArr) => {
+		let { isGameOver, isPlayerTurn } = this.props.fiveChess
+		if (isGameOver || !isPlayerTurn) {
+			return
+		}
+		if (chessArr[i][j] === NO_CHESS) {
+			if (this.state.playWith === 'pc') {
+				this.playChess1(i, j, this.props.fiveChess.humanPlayer, chessArr)
+				this.playerWinOrNot(i, j, this.props.fiveChess.humanPlayer)
+			} else if (this.state.playWith === 'player') {
+				this.playChess1(i, j, this.state.chess, chessArr)
+				this.playerWinOrNot(i, j, this.state.chess)
+			}
+		}
+	}
+
 	mouseClick = (e) => {
 		let index = this.index(e.target, e.target.parentNode.childNodes)
 		let i = index / 15 | 0
 		let j = index % 15
-		let { chessArr, isGameOver } = this.props.fiveChess
-		if (isGameOver) {
+		let { chessArr, isGameOver, isPlayerTurn } = this.props.fiveChess
+		if (isGameOver || !isPlayerTurn) {
 			return
 		}
 		if (chessArr[i][j] === NO_CHESS) {
@@ -94,12 +139,54 @@ export default class Wuziqi extends React.Component {
 		}
 	}
 
+	mouseOver1 = (i, j) => {
+		this.setState({
+			hoverIndex: [i, j]
+		})
+	}
+
+	mouseOut1 = () => {
+		this.setState({
+			hoverIndex: ''
+		})
+	}
+
+	indexToHoverClass = ([i, j]) => {
+		if (i === 0 && j === 0) {
+			return "hover_up_left"
+		}
+		else if (i === 0 && j === 14) {
+			return "hover_up_right"
+		}
+		else if (i === 14 && j === 0) {
+			return "hover_down_left"
+		}
+		else if (i === 14 && j === 14) {
+			return "hover_down_right"
+		}
+		else if (i === 0) {
+			return "hover_up"
+		}
+		else if (i === 14) {
+			return "hover_down"
+		}
+		else if (j === 0) {
+			return "hover_left"
+		}
+		else if (j === 14) {
+			return "hover_right"
+		}
+		else {
+			return "hover"
+		}
+	}
+
 	mouseOver = (e) => {
 		let index = this.index(e.target, e.target.parentNode.childNodes)
 		let i = index / 15 | 0
 		let j = index % 15
-		let { chessArr, isGameOver } = this.props.fiveChess
-		if (isGameOver) {
+		let { chessArr, isGameOver, isPlayerTurn } = this.props.fiveChess
+		if (isGameOver || !isPlayerTurn) {
 			return
 		}
 		if (chessArr[i][j] === NO_CHESS) {
@@ -137,8 +224,8 @@ export default class Wuziqi extends React.Component {
 		let index = this.index(e.target, e.target.parentNode.childNodes)
 		let i = index / 15 | 0
 		let j = index % 15
-		let { chessArr, isGameOver } = this.props.fiveChess
-		if (isGameOver) {
+		let { chessArr, isGameOver, isPlayerTurn } = this.props.fiveChess
+		if (isGameOver || !isPlayerTurn) {
 			return
 		}
 		if (chessArr[i][j] === NO_CHESS) {
@@ -211,8 +298,11 @@ export default class Wuziqi extends React.Component {
 	}
 
 	playerWin = () => {
-		this.gameOver('你赢了')
-		console.log('player win')
+		if (this.state.playWith === 'player') {
+			socket.emit('gameover', this.state.chess)
+		} else {
+			this.gameOver('你赢了')
+		}
 	}
 
 	playerWinOrNot = (i, j, chessColor) => {
@@ -336,7 +426,7 @@ export default class Wuziqi extends React.Component {
 				}
 			}
 		}
-		this.playChess(maxX, maxY, this.props.fiveChess.AIPlayer, chessArr)
+		this.playChess1(maxX, maxY, this.props.fiveChess.AIPlayer, chessArr)
 		if ((maxWeight >= 100000 && maxWeight < 250000) || (maxWeight >= 500000)) {
 			// this.showResult(false);
 			this.gameOver('电脑赢了')
@@ -361,16 +451,16 @@ export default class Wuziqi extends React.Component {
 	resetChessBoard = () => {
 		console.log('reset')
 		const { dispatch } = this.props
-		let { chessArr } = this.props.fiveChess
-		for (let i = 0; i < 15; i++) {
-			for (let j = 0; j < 15; j++) {
-				if (chessArr[i][j] !== NO_CHESS) {
-					let chessDom = this.indexToDom(i, j)
-					this.removeClass(chessDom, "black")
-					this.removeClass(chessDom, "white")
-				}
-			}
-		}
+		// let { chessArr } = this.props.fiveChess
+		// for (let i = 0; i < 15; i++) {
+		// 	for (let j = 0; j < 15; j++) {
+		// 		if (chessArr[i][j] !== NO_CHESS) {
+		// 			let chessDom = this.indexToDom(i, j)
+		// 			this.removeClass(chessDom, "black")
+		// 			this.removeClass(chessDom, "white")
+		// 		}
+		// 	}
+		// }
 		dispatch({
 			type: 'wuziqi/resetChessBoard',
 		})
@@ -380,14 +470,7 @@ export default class Wuziqi extends React.Component {
 	matchUser =  () => {
 		const { dispatch } = this.props
 		let currentUsername = this.props.fiveChess.username
-		const socket = io(DOMAIN)
 		socket.emit('match', currentUsername)
-		// socket.on('match', (user) => {
-		// 	console.log(user)
-		// 	if (user !== currentUsername) {
-		// 		socket.emit('matchPassword', `Room${user}${currentUsername}`)
-		// 	}
-		// })
 		socket.on('password', (msg) => {
 			console.log(msg)
 			if (this.state.chess) {
@@ -605,6 +688,101 @@ export default class Wuziqi extends React.Component {
 		console.log(this.props.fiveChess)
 	}
 
+	chessBoard = () => {
+		return (
+			<div className={styles.chessboard + " bigChessBoard"}>
+				{/*<!-- top line -->*/}
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map((value, index) => {
+					return <div key={index} className={'chess-top'} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className={"chess-top chess-right"} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 1 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>		
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 2 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 3 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 4 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 5 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 6 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 7 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 8 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 9 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 10 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 11 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 12 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- line 13 -->*/}
+				<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
+					return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				{/*<!-- bottom line  -->*/}
+				{[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map((value, index) => {
+					return <div key={index} className="chess-bottom" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				})}
+				<div className="chess-bottom chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+			</div>
+		)
+	}
+
     render () {
 		let readyButton
 		if (this.state.status === 'waiting') {
@@ -614,110 +792,62 @@ export default class Wuziqi extends React.Component {
 		} else {
 			readyButton = <a href="JavaScript:void(0)" onClick={this.matchUser}>准备</a>
 		}
+		let hoverClass = ''
+		let hoverIndex = this.state.hoverIndex
+		if (hoverIndex) {
+			hoverClass = this.indexToHoverClass(hoverIndex)
+		}
+		let { chessArr, isGameOver, isPlayerTurn } = this.props.fiveChess
+		let chessDiv = []
+		let chess = this.state.chess ? this.state.chess : this.props.fiveChess.humanPlayer
+		for (let i = 0; i < chessArr.length; i++) {
+			for (let j = 0; j < chessArr[i].length; j++) {
+				let chessColor
+				let theHoverClass = ''
+				if (chessArr[i][j] === -1) {
+					chessColor = 'black'
+				} else if (chessArr[i][j] === 1) {
+					chessColor = 'white'
+				} else {
+					chessColor = ''
+				}
+				if (JSON.stringify(hoverIndex) === JSON.stringify([i, j])) {
+					theHoverClass = hoverClass
+				}
+				if (isGameOver || !isPlayerTurn || chessArr[i][j] !== 0) {
+					theHoverClass = ''
+				}
+				chessDiv.push(
+					<div key={i*15 + j} onMouseOver={() => this.mouseOver1(i, j)}
+						className={chessColor + ' ' + theHoverClass}
+						onMouseOut={() => this.mouseOut1()} onClick={() => this.mouseClick1(i, j, chess, chessArr)}>
+					</div>
+				)
+			}
+		}
 
         return (
             <div className={styles.wrapper}>
-				<div className={styles.chessboard + " bigChessBoard"}>
-					{/*<!-- top line -->*/}
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map((value, index) => {
-						return <div key={index} className={'chess-top'} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className={"chess-top chess-right"} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 1 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>		
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 2 -->*/}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 3 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 4 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 5 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 6 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 7 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 8 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 9 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 10 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 11 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 12 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- line 13 -->*/}
-					<div className="chess-left" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13].map((value, index) => {
-						return <div key={index} className="chess-middle" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					{/*<!-- bottom line  -->*/}
-					{[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map((value, index) => {
-						return <div key={index} className="chess-bottom" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
-					})}
-					<div className="chess-bottom chess-right" onMouseOver={this.mouseOver} onMouseOut={this.mouseOut} onClick={this.mouseClick}></div>
+				<div className={styles.chessboard}>
+					{chessDiv}
 				</div>
-
+				
 				<div className={styles.operating_panel}>
 					<p>用户：{this.props.fiveChess.username}</p>
 					<p className={styles.p_room}>房间号：{this.props.fiveChess.room}</p>
 					<p>
-						<a id="black_btn" className={styles.selected} href="JavaScript:void(0)">黑子</a>
-						<a id="white_btn" href="JavaScript:void(0)">白子</a>
+						{
+							this.state.chess ? (this.state.chess === -1 ? <a className={styles.selected} href="JavaScript:void(0)">黑子</a> :
+							<a className={styles.selected} href="JavaScript:void(0)">白子</a>) :
+							<a className={styles.selected} href="JavaScript:void(0)">黑子</a>	
+						}
 					</p>
 					<p>
-						<a id="first_move_btn" className={styles.selected} href="JavaScript:void(0)">先手</a>
-						<a id="second_move_btn" href="JavaScript:void(0)">后手</a>
+						{
+							this.state.chess ? (this.state.chess === -1 ? <a className={styles.selected} href="JavaScript:void(0)">先手</a> :
+							<a className={styles.selected} href="JavaScript:void(0)">后手</a>) :
+							<a className={styles.selected} href="JavaScript:void(0)">先手</a>	
+						}
 					</p>
 					<a id="replay_btn" href="JavaScript:void(0)" onClick={this.resetChessBoard}>重置</a>
 					{readyButton}
@@ -746,7 +876,6 @@ export default class Wuziqi extends React.Component {
     }
 
 	componentDidMount () {
-		const socket = io(DOMAIN)
 		window.addEventListener('beforeunload', (ev) => {
 			ev.preventDefault()
 			socket.emit('leave')
@@ -778,25 +907,39 @@ export default class Wuziqi extends React.Component {
 				this.resetChessBoard()
 			})
 			socket.on('chessChange', (msg) => {
-				let chessArr = JSON.parse(msg)
+				let chessArr = JSON.parse(msg.chessArr)
+				let chessColor = msg.chess
 				dispatch({
 					type: 'wuziqi/playChess',
 					payload: {
 						chessArr,
 					}
 				})
-				for (let i = 0; i < 15; i++) {
-					for (let j = 0; j < 15; j++) {
-						let chessDom = this.indexToDom(i, j)
-						if (chessArr[i][j] === BLACK_CHESS) {
-							this.addClass(chessDom, "black")
-						} else if (chessArr[i][j] === WHITE_CHESS) {
-							this.addClass(chessDom, "white")
-						} else {
-							this.removeClass(chessDom, "white")
-							this.removeClass(chessDom, "black")
-						}
+				// for (let i = 0; i < 15; i++) {
+				// 	for (let j = 0; j < 15; j++) {
+				// 		let chessDom = this.indexToDom(i, j)
+				// 		if (chessArr[i][j] === BLACK_CHESS) {
+				// 			this.addClass(chessDom, "black")
+				// 		} else if (chessArr[i][j] === WHITE_CHESS) {
+				// 			this.addClass(chessDom, "white")
+				// 		} else {
+				// 			this.removeClass(chessDom, "white")
+				// 			this.removeClass(chessDom, "black")
+				// 		}
+				// 	}
+				// }
+				dispatch({
+					type: 'wuziqi/isPlayerTurn',
+					payload: {
+						isPlayerTurn: this.state.chess !== chessColor
 					}
+				})
+			})
+			socket.on('gameover', (msg) => {
+				if (msg === 1) {
+					this.gameOver('白棋获胜')
+				} else if (msg === -1) {
+					this.gameOver('黑棋获胜')
 				}
 			})
 		})

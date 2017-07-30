@@ -783,6 +783,16 @@ export default class Wuziqi extends React.Component {
 		)
 	}
 
+	baiduAnalize = () => {
+		// var _hmt = _hmt || []
+        (function() {
+            var hm = document.createElement("script")
+            hm.src = "https://hm.baidu.com/hm.js?2c57dc2aa86010c3428a43ee24e48d32"
+            var s = document.getElementsByTagName("script")[0]
+            s.parentNode.insertBefore(hm, s)
+        })()
+	}
+
     render () {
 		let readyButton
 		if (this.state.status === 'waiting') {
@@ -876,6 +886,7 @@ export default class Wuziqi extends React.Component {
     }
 
 	componentDidMount () {
+		this.baiduAnalize()
 		window.addEventListener('beforeunload', (ev) => {
 			ev.preventDefault()
 			socket.emit('leave')

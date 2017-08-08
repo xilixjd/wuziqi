@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            /* .grid {
+                border: 1px solid black;
+                height: 200px;
+                float: left;
+                width: 200px;
+            }
+
+            .middle {
+                width: 100%;
+                background-color: yellow;
+            }
+
+            .left {
+                margin-left: -100%;
+                background-color: red;
+            }
+
+            .right {
+                margin-left: -205px;
+                background-color: green;
+            } */
+
+            .countainer {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .grid {
+                height: 200px;
+                border: 1px solid black;
+            }
+
+            .left, .right {
+                flex: 0 0 200px;
+            }
+
+            .left {
+                order: -1;
+            }
+
+            .middle {
+                flex: 1;
+            }
+
+            .fixed-width {
+                width: 200px;
+                float: left;
+            }
+
+            .flexible-width {
+                width: 100%; 
+            }
+
+            .countainer3 {
+                display: flex;
+                /* 默认 */
+                flex-direction: row; 
+            }
+
+            .fixed-width-flex {
+                flex: 0 0 200px;
+            }
+
+            .flexible-width-flex {
+                flex: 1;
+            }
+
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="countainer">
+            <div class="middle grid">
+
+            </div>
+            <div class="left grid"></div>
+            <div class="right grid"></div>
+        </div>
+        <div class="countainer2">
+            <div class="fixed-width grid"></div>
+            <div class="flexible-width grid">
+            </div>
+        </div>
+        <div class="countainer3">
+            <div class="fixed-width-flex grid"></div>
+            <div class="flexible-width-flex grid">
+            </div>
+        </div>
+        <div id="outSide" style="width:100px; height:100px; background:#000; padding:50px">
+            <div id="inSide" style="width:100px; height:100px; background:#CCC"></div>
+        </div>
+
+        <script type="text/javascript">
+        //本例你实际希望点击灰色盒子打开google首页，而点击黑色盒子打开baidu首页，但结果你点击灰色盒子的时候，却是同时打开了两个网页。其实在实际设计中较少遇到此问题，你可能会想如果我在页面不同DOM深处安置了不同的按钮或链接，深层处的事件触发会不会波及顶层的按钮呢？不会，因为按钮不能形成嵌套关系。
+        // function openWin(url, e)
+        // {
+        //     window.open(url);
+        //     console.log(e);
+        // }
+        document.getElementById('inSide').onclick = function(e) {
+            e.stopPropagation()
+            window.open('http://www.baidu.com');
+        }
+        document.getElementById('outSide').onclick = function() {
+            window.open('http://www.sina.com');
+        }
+        </script>
+    </body>
+</html>

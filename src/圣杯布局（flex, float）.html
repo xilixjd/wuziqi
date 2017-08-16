@@ -2,122 +2,310 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            /* .grid {
-                border: 1px solid black;
-                height: 200px;
-                float: left;
-                width: 200px;
-            }
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
 
-            .middle {
-                width: 100%;
-                background-color: yellow;
-            }
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .countainer-normal .grid {
+            border: 1px solid black;
+            height: 200px;
+            float: left;
+            width: 200px;
+        }
 
-            .left {
-                margin-left: -100%;
-                background-color: red;
-            }
+        .countainer-normal .middle {
+            width: 100%;
+            background-color: yellow;
+        }
 
-            .right {
-                margin-left: -205px;
-                background-color: green;
-            } */
+        .countainer-normal .left {
+            margin-left: -100%;
+            background-color: red;
+        }
 
-            .countainer {
-                display: flex;
-                flex-direction: row;
-            }
+        .countainer-normal .right {
+            margin-left: -205px;
+            background-color: green;
+        }
 
-            .grid {
-                height: 200px;
-                border: 1px solid black;
-            }
+        .countainer {
+            display: flex;
+            flex-direction: row;
+        }
 
-            .left, .right {
-                flex: 0 0 200px;
-            }
+        .grid {
+            height: 200px;
+            border: 1px solid black;
+        }
 
-            .left {
-                order: -1;
-            }
+        .countainer .left,
+        .countainer .right {
+            flex: 0 0 200px;
+        }
 
-            .middle {
-                flex: 1;
-            }
+        .countainer .left {
+            order: -1;
+        }
 
-            .fixed-width {
-                width: 200px;
-                float: left;
-            }
+        .countainer .middle {
+            flex: 1;
+        }
 
-            .flexible-width {
-                width: 100%; 
-            }
+        .fixed-width {
+            width: 200px;
+            float: left;
+        }
 
-            .countainer3 {
-                display: flex;
-                /* 默认 */
-                flex-direction: row; 
-            }
+        .flexible-width {
+            width: 100%;
+        }
 
-            .fixed-width-flex {
-                flex: 0 0 200px;
-            }
+        .countainer3 {
+            display: flex;
+            /* 默认 */
+            flex-direction: row;
+        }
 
-            .flexible-width-flex {
-                flex: 1;
-            }
+        .fixed-width-flex {
+            flex: 0 0 200px;
+        }
 
-        </style>
-    </head>
-    <body>
-        <!--[if lt IE 7]>
+        .flexible-width-flex {
+            flex: 1;
+        }
+
+        #wrap {
+            width: 600px;
+            height: 600px;
+            background: #ccc;
+            margin: 0 auto;
+            position: relative;
+            perspective: 800px;
+        }
+
+        #box {
+            position: absolute;
+            left: 100px;
+            width: 400px;
+            height: 400px;
+            border: 1px solid #000;
+            transform-style: preserve-3d;
+            transform-origin: right center;
+        }
+
+        #box a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 28px;
+            backface-visibility: hidden;
+            color: #fff
+        }
+
+        #box a:nth-of-type(1) {
+            background: blue;
+            transition: .8s transform
+        }
+
+        #box a:nth-of-type(2) {
+            background: red;
+            transform: rotateY(-180deg);
+            transition: .8s transform
+        }
+
+        #box:hover a:nth-of-type(1) {
+            transform: rotateY(180deg);
+        }
+
+        #box:hover a:nth-of-type(2) {
+            transform: rotateY(0deg);
+        }
+
+        .countainer4 {
+            width: 100%;
+            height: 500px;
+            background-color: yellow;
+            position: relative;
+        }
+
+        .countainer4 #box1 {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-color: grey;
+            left: 50%;
+            top: 50%;
+            margin-left: -100px;
+            margin-top: -100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countainer4 #box1 #box11 {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+        }
+
+        .countainer5 div {
+            background-color: red;
+            border: 1px solid black;
+            height: 200px;
+        }
+
+        .countainer5 div:nth-child(2) {
+            position: relative;
+            left: 50px;
+            top: 50px;
+        }
+
+        .countainer6 {
+            display: flex;
+        }
+
+        .countainer6 .left1 {
+            height: 300px;
+            background-color: blue;
+            flex: 1;
+        }
+
+        .countainer6 .mid1 {
+            height: 300px;
+            background-color: black;
+            flex: 0 0 200px;
+        }
+
+        .countainer6 .right1 {
+            height: 300px;
+            background-color: green;
+            flex: 1;
+        }
+
+        .left2 {
+            width: 30%;
+            height: 29.5vw;
+            background-color: aquamarine;
+            display: inline-block;
+        }
+
+        .mid2 {
+            width: 30%;
+            padding-bottom: 30%;
+            background-color: beige;
+            display: inline-block;
+            height: 0;
+        }
+
+        .right2 {
+            width: 30%;
+            background-color: yellow;
+            overflow: hidden;
+        }
+
+        .right2::after {
+            content: "";
+            margin-top: 100%;
+            display: block;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <div class="countainer">
-            <div class="middle grid">
+    <div class="countainer-normal">
+        <div class="middle grid">
 
-            </div>
-            <div class="left grid"></div>
-            <div class="right grid"></div>
         </div>
-        <div class="countainer2">
-            <div class="fixed-width grid"></div>
-            <div class="flexible-width grid">
-            </div>
-        </div>
-        <div class="countainer3">
-            <div class="fixed-width-flex grid"></div>
-            <div class="flexible-width-flex grid">
-            </div>
-        </div>
-        <div id="outSide" style="width:100px; height:100px; background:#000; padding:50px">
-            <div id="inSide" style="width:100px; height:100px; background:#CCC"></div>
-        </div>
+        <div class="left grid"></div>
+        <div class="right grid"></div>
+    </div>
+    <div class="countainer">
+        <div class="middle grid">
 
-        <script type="text/javascript">
+        </div>
+        <div class="left grid"></div>
+        <div class="right grid"></div>
+    </div>
+    <div class="countainer2">
+        <div class="fixed-width grid"></div>
+        <div class="flexible-width grid">
+        </div>
+    </div>
+    <div class="countainer3">
+        <div class="fixed-width-flex grid"></div>
+        <div class="flexible-width-flex grid">
+        </div>
+    </div>
+    <div id="outSide" style="width:100px; height:100px; background:#000; padding:50px">
+        <div id="inSide" style="width:100px; height:100px; background:#CCC"></div>
+    </div>
+    <div id="wrap">
+        <div id="box">
+            <a href="#" id="one">世界那么大</a>
+            <a href="#" id="two">我想去看看</a>
+        </div>
+    </div>
+    <div class="countainer4">
+        <div id="box1">
+            <div id="box11"></div>
+        </div>
+    </div>
+    <div class="countainer5">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="countainer6">
+        <div class="left1"></div>
+        <div class="mid1"></div>
+        <div class="right1"></div>
+    </div>
+
+    <div class="countainer7">
+        <div class="left2"></div>
+        <div class="mid2"></div>
+        <div class="right2"></div>
+    </div>
+
+    <script type="text/javascript">
         //本例你实际希望点击灰色盒子打开google首页，而点击黑色盒子打开baidu首页，但结果你点击灰色盒子的时候，却是同时打开了两个网页。其实在实际设计中较少遇到此问题，你可能会想如果我在页面不同DOM深处安置了不同的按钮或链接，深层处的事件触发会不会波及顶层的按钮呢？不会，因为按钮不能形成嵌套关系。
         // function openWin(url, e)
         // {
         //     window.open(url);
         //     console.log(e);
         // }
-        document.getElementById('inSide').onclick = function(e) {
-            e.stopPropagation()
-            window.open('http://www.baidu.com');
-        }
-        document.getElementById('outSide').onclick = function() {
-            window.open('http://www.sina.com');
-        }
-        </script>
-    </body>
+        // document.getElementById('inSide').onclick = function(e) {
+        //     e.stopPropagation()
+        //     window.open('http://www.baidu.com');
+        // }
+        // document.getElementById('outSide').onclick = function() {
+        //     window.open('http://www.sina.com');
+        // }
+
+        // 设为 true 时，为时间捕获，会先打印最上层元素 outSide
+        document.getElementById('outSide').addEventListener("click", function () {
+            console.log(this);
+        }, true)
+        document.getElementById('inSide').addEventListener("click", function () {
+            console.log(this);
+        }, true)
+
+    </script>
+</body>
+
 </html>

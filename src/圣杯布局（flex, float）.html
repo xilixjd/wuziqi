@@ -13,6 +13,10 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
         .countainer-normal .grid {
             border: 1px solid black;
             height: 200px;
@@ -38,6 +42,7 @@
         .countainer {
             display: flex;
             flex-direction: row;
+             flex-flow: wrap;  /*多行*/
         }
 
         .grid {
@@ -58,13 +63,37 @@
             flex: 1;
         }
 
+        .countainer2 {
+            overflow: hidden;
+        }
+
         .fixed-width {
             width: 200px;
             float: left;
+            background-color: forestgreen;
         }
 
         .flexible-width {
             width: 100%;
+            background-color: saddlebrown;
+            margin-left: 200px;
+        }
+
+        .countainer2-1 {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fixed-width2 {
+            width: 200px;
+            position: absolute;
+            background-color: antiquewhite;
+        }
+
+        .flexible-width2 {
+            width: 100%;
+            background-color: darkcyan;
+            margin-left: 200px;
         }
 
         .countainer3 {
@@ -154,9 +183,19 @@
 
         .countainer4 #box1 #box11 {
             position: absolute;
+            width: 150px;
+            height: 150px;
+            background-color: white;
+        }
+
+        .countainer4 #box1 #box11 #box111 {
+            position: absolute;
             width: 50px;
             height: 50px;
-            background-color: white;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: greenyellow;
         }
 
         .countainer5 div {
@@ -220,6 +259,68 @@
             display: block;
         }
 
+        .countainer8{
+            /* overflow: hidden; */
+        }
+
+        .left3 {
+            float: left;
+            width: 200px;
+            height: 200px;
+            background-color: fuchsia;
+        }
+
+        .right3 {
+            float: right;
+            width: 200px;
+            height: 200px;
+            background-color: whitesmoke;
+        }
+
+        .mid3 {
+            height: 200px;
+            background-color: gold;
+            margin: 0 200px;
+        }
+
+        .countainer9 {
+            position: relative;
+        }
+
+        .left4 {
+            position: absolute;
+            left: 0;
+            width: 200px;
+            height: 200px;
+            background-color: whitesmoke;
+        }
+
+        .right4 {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            background-color: gold;
+        }
+
+        .mid4 {
+            height: 200px;
+            background-color: fuchsia;
+            margin: 0 200px;
+        }
+
+        #waterFlowWrap {
+            position: relative;
+        }
+
+        .waterFlow{
+            background: #ccc;
+            width: 200px;
+            position: absolute;
+            transition:0.5s;
+        }
+
     </style>
 </head>
 
@@ -227,23 +328,28 @@
     <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-    <div class="countainer-normal">
+     <!-- <div class="countainer-normal">
         <div class="middle grid">
 
         </div>
         <div class="left grid"></div>
         <div class="right grid"></div>
-    </div>
-    <div class="countainer">
+    </div>  -->
+     <div class="countainer">
         <div class="middle grid">
 
         </div>
         <div class="left grid"></div>
         <div class="right grid"></div>
-    </div>
+    </div> 
     <div class="countainer2">
         <div class="fixed-width grid"></div>
         <div class="flexible-width grid">
+        </div>
+    </div>
+    <div class="countainer2-1">
+        <div class="fixed-width2 grid"></div>
+        <div class="flexible-width2 grid">
         </div>
     </div>
     <div class="countainer3">
@@ -262,7 +368,9 @@
     </div>
     <div class="countainer4">
         <div id="box1">
-            <div id="box11"></div>
+            <div id="box11">
+                <div id="box111"></div>
+            </div>
         </div>
     </div>
     <div class="countainer5">
@@ -281,6 +389,19 @@
         <div class="mid2"></div>
         <div class="right2"></div>
     </div>
+    <div class="countainer8">
+        <div class="left3"></div>
+        <div class="right3"></div>
+        <div class="mid3"></div>
+    </div>
+    <div class="countainer9">
+        <div class="left4"></div>
+        <div class="mid4"></div>
+        <div class="right4"></div>
+    </div>
+    <div id="waterFlowWrap">
+
+    </div>
 
     <script type="text/javascript">
         //本例你实际希望点击灰色盒子打开google首页，而点击黑色盒子打开baidu首页，但结果你点击灰色盒子的时候，却是同时打开了两个网页。其实在实际设计中较少遇到此问题，你可能会想如果我在页面不同DOM深处安置了不同的按钮或链接，深层处的事件触发会不会波及顶层的按钮呢？不会，因为按钮不能形成嵌套关系。
@@ -297,7 +418,7 @@
         //     window.open('http://www.sina.com');
         // }
 
-        // 设为 true 时，为时间捕获，会先打印最上层元素 outSide
+        // 设为 true 时，为事件捕获，会先打印最上层元素 outSide
         document.getElementById('outSide').addEventListener("click", function () {
             console.log(this);
         }, true)
@@ -306,6 +427,78 @@
         }, true)
 
     </script>
-</body>
+
+    <script>
+        window.onload = function() {
+            createDiv();
+        }
+        
+        function createDiv () {
+            for (var i = 0; i < 20; i++) {
+                var div = document.createElement('div');
+                var rnd = Math.floor(Math.random()*300+50)   //div的高度在50到350之间
+                div.style.height = rnd + "px";
+                div.innerHTML = i;
+                div.className = "waterFlow";
+                document.getElementById("waterFlowWrap").appendChild(div);
+                // document.body.appendChild(div);    
+            };
+            change()
+        }
+
+        function change() {
+            var aDiv = document.getElementsByClassName('waterFlow');
+            // alert(aDiv.length);
+            var windowCW = document.documentElement.clientWidth;  //窗口视口的宽度
+            var n = Math.floor(windowCW/210);                     //一行能容纳多少个div，并向下取整
+            if (n<=0) {return};
+            // alert(n);
+            var t = 0;
+            var center = (windowCW - n*210)/2;                   //居中
+            var arrH = [];                                       //定义一个数组存放div的高度
+            
+            for (var i = 0; i < aDiv.length; i++) {
+                var j = i%n;                                  
+                if (arrH.length==n) {                    //一行排满n个后到下一行                    
+                    var min = findMin(arrH);              //从最“矮”的排起，可以从下图的序号中看得出来，下一行中序号是从矮到高排列的
+                    aDiv[i].style.left =center + min*210 + "px";       
+                    aDiv[i].style.top = arrH[min]+10 + "px";
+                    arrH[min] += aDiv[i].offsetHeight + 10;    
+                    // alert(min);
+                }else{
+                    arrH[j] = aDiv[i].offsetHeight;        
+                    aDiv[i].style.left =center + 200*j+10*j + "px";
+                    aDiv[i].style.top = 0;
+                }
+
+            };
+        }
+        window.onresize = function(){      //窗口改变也调用函数  
+            change();
+        }
+        window.onscroll= function  () {
+            // 页面总高度
+            var bodyHeight = document.documentElement.offsetHeight;
+            // 可视区高度
+            var windowHeight = document.documentElement.clientHeight;
+            //滚动条的高度    
+            var srcollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            var srcollH = document.body.scrollHeight;
+            // alert(srcollH);
+            if (srcollTop+windowHeight  >= srcollH-20) {
+                createDiv();
+            };
+        }
+
+        function findMin(arr) {
+            var m = 0;
+            for (var i = 0; i < arr.length; i++) {
+                m = Math.min(arr[m], arr[i]) == arr[m] ? m : i;
+            }
+            return m;
+        }
+
+    </script>
+    </body>
 
 </html>

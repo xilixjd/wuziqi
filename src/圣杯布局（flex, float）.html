@@ -232,11 +232,43 @@
             flex: 1;
         }
 
+        .countainer6-1 {
+            height: 200px;
+        }
+
+        #left,
+        #right {
+            float: left;
+            margin: 0 0 0 -271px;
+            width: 50%;
+            height: 100%;
+        }
+
+        #main {
+            width: 540px;
+            float: left;
+            background: green;
+            height: 100%;
+        }
+            
+        .inner {
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+            
+        #left .inner,
+        #right .inner {
+            margin: 0 0 0 271px;  
+            background: orange;
+        }
+
         .left2 {
             width: 30%;
             height: 29.5vw;
             background-color: aquamarine;
             display: inline-block;
+            margin-left: -50%;
         }
 
         .mid2 {
@@ -326,6 +358,39 @@
         #bar{line-height:24px; background:#beceeb; border-bottom:1px solid #a0b3d6; padding-left:5px; cursor:move;}
         #content{width:420px; height:250px; padding:10px 5px;}
 
+        /*图片懒加载*/
+        ul.lazy-ul{overflow:hidden;}
+        li.lazy-li{list-style:none;width:10rem;height:12rem;border:1px solid #ccc;box-sizing:border-box;-webkit-box-sizing:border-box;float:left;overflow:hidden;position:relative;}
+        li.lazy-li i{width:20px;height:20px;border-radius:20px;position:absolute;border:2px solid #6feb95;z-index:0;left:50%;top:50%;margin-top:-11px;margin-left:-11px;animation:move 1s infinite;-webkit-animation:move 1s infinite;}
+        li.lazy-li i:before{position:absolute;width:5px;height:5px;border-radius:4px;content:'';box-shadow:0 0 10px #666;-webkit-box-shadow:0 0 10px #666;background:#fff;border:1px solid #fff;top:-3px;left:50%;margin-left:-3px;}
+        img.lazy-img{vertical-align:middle;border-width:0;width:100%;position:relative;z-index:1;}
+        @keyframes move{
+            0%{
+                transform:rotateZ(0);
+            }
+            100%{
+                transform:rotateZ(360deg);
+            }
+        }
+
+        /*CSS轮播图*/
+        #frame-wrap {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        #frame{position:absolute;width:300px;height:200px;overflow:hidden;border-radius:5px}
+        #dis{position:absolute;opacity:.5}
+        #dis li{display:inline-block;width:200px;height:20px;margin:0 50px;float:left;text-align:center;color:#fff;border-radius:10px;background:#000}
+        #photos img{float:left;width:300px;height:200px}
+        #photos {  position: absolute;z-index:9;  width: calc(300px * 4);/*---修改图片数量的话需要修改下面的动画参数*/  }
+        .play{ animation: ma 20s ease-out infinite alternate;}
+         @keyframes ma {
+            0%,25% {        left: 0px;       }
+            30%,50% {       left: -300px;    }
+            55%,75% {       left: -600px;    }
+            80%,100% {       left: -900px;    }
+        } 
     </style>
 </head>
 
@@ -388,6 +453,17 @@
         <div class="mid1"></div>
         <div class="right1"></div>
     </div>
+    <div class="countainer6-1">
+        <div id="left">
+            <div class="inner">this is left sidebar content</div>
+        </div>
+        <div id="main">
+            <div class="inner">this is main content</div>
+        </div>
+        <div id="right">
+            <div class="inner">this is right siderbar content</div>
+        </div>
+    </div>
 
     <div class="countainer7">
         <div class="left2"></div>
@@ -412,6 +488,61 @@
             </div>
         </div>
     </div>
+    <div id="frame-wrap">
+        <div id="frame" >
+            <div id="photos" class="play">
+                <img src="http://read.html5.qq.com/image?src=forum&q=5&r=0&imgflag=7&imageUrl=http://img.ivsky.com/img/tupian/pre/201707/28/oushidebowuguantupian.jpg" >
+                <img src="http://read.html5.qq.com/image?src=forum&q=5&r=0&imgflag=7&imageUrl=http://img.ivsky.com/img/tupian/pre/201707/28/yiwangwujidedacaoyuantupian.jpg" >
+                <img src="http://read.html5.qq.com/image?src=forum&q=5&r=0&imgflag=7&imageUrl=http://img.ivsky.com/img/tupian/pre/201708/03/yuebing-004.jpg" >
+                <img src="http://read.html5.qq.com/image?src=forum&q=5&r=0&imgflag=7&imageUrl=http://img.ivsky.com/img/tupian/pre/201707/28/zhuandongdehelanfengchetupian-001.jpg" >
+                <ul id="dis">
+                    <li>111111111111111</li>
+                    <li>22222222222222</li>
+                    <li>33333333333333</li>
+                    <li>44444444444444</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <ul class="lazy-ul">
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p01N203pHTU7/Wr5314kcLAtVCi.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p01a3SXHo2hZ/XYAC5TLk4uYWXn.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p015trgKM7vw/H0iyDPPneOVrA4.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://imgsrc.baidu.com/baike/pic/item/2f9cbdcc5e0bcf5c00e9283b.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p015trgKM7vw/H0iyDPPneOVrA4.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://imgsrc.baidu.com/baike/pic/item/2f9cbdcc5e0bcf5c00e9283b.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p015trgKM7vw/H0iyDPPneOVrA4.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://imgsrc.baidu.com/baike/pic/item/2f9cbdcc5e0bcf5c00e9283b.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p015trgKM7vw/H0iyDPPneOVrA4.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://imgsrc.baidu.com/baike/pic/item/2f9cbdcc5e0bcf5c00e9283b.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic.58pic.com/58pic/17/18/97/01U58PIC4Xr_1024.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://cover.read.duokan.com/mfsv2/download/fdsc3/p015trgKM7vw/H0iyDPPneOVrA4.jpg!t"><i></i></li>
+        <li class="lazy-li" data-src="http://77fkxu.com1.z0.glb.clouddn.com/20160308/1457402219_73571.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://imgsrc.baidu.com/baike/pic/item/2f9cbdcc5e0bcf5c00e9283b.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://pic1.cxtuku.com/00/16/18/b3809a2ba0f3.jpg"><i></i></li>
+        <li class="lazy-li" data-src="http://img.bitscn.com/upimg/allimg/c150708/14363B06253120-6060O.jpg"><i></i></li>
+    </ul>
+
     <div id="waterFlowWrap">
 
     </div>
@@ -432,12 +563,13 @@
         // }
 
         // 设为 true 时，为事件捕获，会先打印最上层元素 outSide
-        document.getElementById('outSide').addEventListener("click", function () {
-            console.log(this);
-        }, true)
-        document.getElementById('inSide').addEventListener("click", function () {
-            console.log(this);
-        }, true)
+        // document.getElementById('outSide').addEventListener("click", function () {
+        //     console.log(this);
+        // }, true)
+        document.getElementById('outSide').addEventListener("click", function (e) {
+            console.log(e.target);
+            console.log(e.currentTarget);
+        }, false)
 
     </script>
 
@@ -492,7 +624,7 @@
         window.onresize = function(){      //窗口改变也调用函数  
             change();
         }
-        window.onscroll= function  () {
+        window.addEventListener('scroll', function  () {
             // 页面总高度
             var bodyHeight = document.documentElement.offsetHeight;
             // 可视区高度
@@ -504,7 +636,7 @@
             if (srcollTop+windowHeight  >= srcollH-20) {
                 createDiv();
             };
-        }
+        })
 
         function findMin(arr) {
             var m = 0;
@@ -552,6 +684,7 @@
             var e = event;
             params.currentX = e.clientX;
             params.currentY = e.clientY;
+            console.log(e.clientX, e.clientY);
         };
         document.onmouseup = function(){
             params.flag = false;	
@@ -581,6 +714,49 @@
         }	
     };
 
+    </script>
+    <script>
+        var oUl = document.querySelectorAll('ul.lazy-ul')[0];
+        var aLi = oUl.querySelectorAll('li.lazy-li');
+
+        /* 创建img标签函数 */    
+        function createImg(obj){
+            var src = '';
+            if(obj.dataset.src){
+                src = obj.dataset.src;
+            }else{
+                src = obj.getAttribute('data-src');
+            }
+            if(obj.children.length <= 1){
+                var img = document.createElement('img');
+                img.src = src;
+                obj.appendChild(img);
+                if (obj.querySelector("i")) {
+                    obj.removeChild(obj.querySelector("i"));
+                }
+            }
+        }
+
+        /* 计算节点到文档顶部的距离 */    
+        function getTop(obj){
+            var h = obj.offsetTop;
+            // var h = 0;
+            // while(obj){
+            //     h += obj.offsetTop;
+            //     obj = obj.offsetParent;
+            // }
+            return h;
+        }
+            
+        /* 滚动实时计算所到区域并进行相关计算 */
+        window.addEventListener("scroll", function(){
+            var t = document.documentElement.clientHeight + (document.body.scrollTop || document.documentElement.scrollTop);
+            for(var i=0;i<aLi.length;i++){
+                if(getTop(aLi[i]) < t){  
+                    setTimeout('createImg(aLi['+i+'])',1000)
+                }
+            } 
+        })
     </script>
     </body>
 

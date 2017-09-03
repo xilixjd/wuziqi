@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
+    <title>练习页面</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -42,7 +42,7 @@
         .countainer {
             display: flex;
             flex-direction: row;
-             flex-flow: wrap;  /*多行*/
+            flex-flow: wrap;  /*多行*/
         }
 
         .grid {
@@ -684,7 +684,6 @@
             var e = event;
             params.currentX = e.clientX;
             params.currentY = e.clientY;
-            console.log(e.clientX, e.clientY);
         };
         document.onmouseup = function(){
             params.flag = false;	
@@ -727,7 +726,7 @@
             }else{
                 src = obj.getAttribute('data-src');
             }
-            if(obj.children.length <= 1){
+            if(obj.children[0].tagName === "I"){
                 var img = document.createElement('img');
                 img.src = src;
                 obj.appendChild(img);
@@ -749,14 +748,22 @@
         }
             
         /* 滚动实时计算所到区域并进行相关计算 */
-        window.addEventListener("scroll", function(){
+        window.addEventListener("scroll", debounce(function(){
             var t = document.documentElement.clientHeight + (document.body.scrollTop || document.documentElement.scrollTop);
             for(var i=0;i<aLi.length;i++){
                 if(getTop(aLi[i]) < t){  
                     setTimeout('createImg(aLi['+i+'])',1000)
                 }
             } 
-        })
+        }, 500))
+
+        function debounce(func, wait) {
+            var timeout;
+            return function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(func, wait);
+            }
+        }
     </script>
     </body>
 

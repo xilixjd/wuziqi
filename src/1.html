@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>轮播练习</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.js"></script>
+<style>
+	html,body,ul,li{
+		padding:0;
+		margin:0;
+	}
+	a{
+		text-decoration:none;
+	}
+	li{
+		list-style:none;
+	}
+	.ct{
+		width:500px;
+		height:300px;
+		position:relative;
+		overflow:hidden;
+	}
+	.img-ct{		
+		position:absolute;
+		
+	}
+	.img-ct:after{
+		clear:both;
+		content:'';
+		display:block;
+	}
+	.img-ct li{
+		float:left;
+	}
+	.img-ct img{
+		width:500px;
+		height:300px;
+	}
+	.arrow{
+		position:absolute;
+		top:50%;
+		height:40px;
+		width:40px;
+		text-align:center;
+		border-radius:50px;
+		line-height:40px;
+		font-size:20px;
+		margin-top:-20px;
+		background-color:#4E443C;
+		color:#fff;
+		opacity:0.5;
+	}
+	.arrow:hover{
+		opacity:1;
+	}
+	.pre{
+		left:10px;
+	}
+	.next{
+		right:10px;
+	}
+	.nav li{
+		display:inline-block;
+		width:20px;
+		height:5px;
+		border-radius:2px;
+		background-color:#fff;
+		cursor: pointer;
+	}
+	.nav{
+		position:absolute;
+		bottom:20px;
+		left:50%;
+		transform: translateX(-50%);
+	}
+	.nav .setcolor{
+		background-color:#666;
+	}
+</style>
+</head>
+<body>
+     <div class="ct">
+    	<ul class="img-ct">
+    		<li><a href="#"><div></div><img src="http://img1.gamersky.com/image2016/08/20160821zj_235_13/gamersky_05origin_09_20168211534C71.jpg" alt=""></a></li>
+    		<li><a href="#"><img src="http://img1.gamersky.com/image2016/06/20160611_hc_44_9/gamersky_229origin_457_201661118318E5.jpg" alt=""></a></li>
+    		<li><a href="#"><img src="http://img1.gamersky.com/image2016/07/20160708_djy_248_2/gamersky_02origin_03_201678172745A.jpg" alt=""></a></li>
+    		<li><a href="#"><img src="http://img1.gamersky.com/image2016/08/20160811_djy_248_5/gamersky_02origin_03_201681117146A3.jpg" alt=""></a></li>
+    	</ul>
+		<a class = 'pre  arrow' href="#"><</a>
+		<a class = 'next arrow' href="#">></a>
+		
+    </div>
+
+    <script>
+    	var $ct=$('.img-ct'),
+    		$items=$ct.children(),
+    		$pre=$('.pre'),
+    		$next=$('.next'),
+    		imgCount=$items.size(),
+    		imgWidth=$items.width();
+    		$ct.append($items.first().clone());
+    		$ct.prepend($items.last().clone());
+    	var	newCount=$ct.children().size();
+    		$ct.css({left:0-imgWidth,width:newCount*imgWidth});
+    		$next.on('click',function(){
+    			// if(lock===false){
+    				// lock=true;
+    				playnext();
+    			// }
+    			
+    		})
+    		$pre.on('click',function(){
+    			// if(lock===false){
+    			// 	lock=true;
+    				playpre();
+    			// }
+    			
+    		})
+    	var curidx =0;
+    	var mov = 1;
+    	var lock=false;
+        function playnext(){
+            $ct.animate({left:'-='+mov*imgWidth},function(){
+                curidx+=mov;
+                if(curidx===imgCount){
+                    $ct.css({left:0-imgWidth});
+                    curidx=0;
+                }
+                // lock =false;
+            })
+        }
+        
+        function playpre(){
+            $ct.animate({left:'+='+mov*imgWidth},function(){
+                curidx-=mov;
+                if(curidx===(-1)){
+                    $ct.css({left:0-imgWidth*imgCount});
+                    curidx=3;
+                }
+                // lock =false;
+            })
+        }
+        // setInterval(function() {
+        //     playnext();
+        // }, 2000)
+    </script>
+</body>
+</html>

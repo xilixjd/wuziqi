@@ -268,7 +268,7 @@
             height: 29.5vw;
             background-color: aquamarine;
             display: inline-block;
-            margin-left: -50%;
+            margin-left: -60%;
         }
 
         .mid2 {
@@ -277,6 +277,16 @@
             background-color: beige;
             display: inline-block;
             height: 0;
+        }
+
+        .mid2-1 {
+            width: 0;
+            height: 0;
+            border: 100px solid black;
+            border-top: 100px transparent solid;
+            border-left: 100px transparent solid;
+            border-right: 100px transparent solid;
+            display: inline-block;
         }
 
         .right2 {
@@ -363,6 +373,7 @@
         li.lazy-li{list-style:none;width:10rem;height:12rem;border:1px solid #ccc;box-sizing:border-box;-webkit-box-sizing:border-box;float:left;overflow:hidden;position:relative;}
         li.lazy-li i{width:20px;height:20px;border-radius:20px;position:absolute;border:2px solid #6feb95;z-index:0;left:50%;top:50%;margin-top:-11px;margin-left:-11px;animation:move 1s infinite;-webkit-animation:move 1s infinite;}
         li.lazy-li i:before{position:absolute;width:5px;height:5px;border-radius:4px;content:'';box-shadow:0 0 10px #666;-webkit-box-shadow:0 0 10px #666;background:#fff;border:1px solid #fff;top:-3px;left:50%;margin-left:-3px;}
+        li.lazy-li img {width: 10rem; height: 12rem;}
         img.lazy-img{vertical-align:middle;border-width:0;width:100%;position:relative;z-index:1;}
         @keyframes move{
             0%{
@@ -385,7 +396,7 @@
         #photos img{float:left;width:300px;height:200px}
         #photos {  position: absolute;z-index:9;  width: calc(300px * 4);/*---修改图片数量的话需要修改下面的动画参数*/  }
         .play{ animation: ma 20s ease-out infinite alternate;}
-         @keyframes ma {
+        @keyframes ma {
             0%,25% {        left: 0px;       }
             30%,50% {       left: -300px;    }
             55%,75% {       left: -600px;    }
@@ -468,6 +479,7 @@
     <div class="countainer7">
         <div class="left2"></div>
         <div class="mid2"></div>
+        <div class="mid2-1"></div>
         <div class="right2"></div>
     </div>
     <div class="countainer8">
@@ -580,6 +592,18 @@
             var oBar = document.getElementById("bar");
             startDrag(oBar, oBox);
         }
+        // window.onload = function() {
+        //     console.log(1)
+        // }
+        // window.onload = function() {
+        //     console.log(2)
+        // }
+        // window.addEventListener("load", function() {
+        //     console.log(1);
+        // })
+        // window.addEventListener("load", function() {
+        //     console.log(2);
+        // })
         
         function createDiv () {
             for (var i = 0; i < 20; i++) {
